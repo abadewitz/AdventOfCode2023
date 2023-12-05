@@ -12,4 +12,9 @@ public sealed record GameSample
     {
         Id = id;
     }
+
+    public double GetPower()
+    {
+        return HighestAmountBlue * HighestAmountGreen * HighestAmountRed;
+    }
 }

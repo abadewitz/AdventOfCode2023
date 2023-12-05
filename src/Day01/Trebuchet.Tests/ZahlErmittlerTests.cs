@@ -8,7 +8,7 @@ namespace Trebuchet.Tests;
 public class ZahlErmittlerTests
 {
     [Test]
-    public void Test()
+    public void ErmittleZweiZiffernZahlTest()
     {
         ZiffernUndWoerterErmittler sut = new ZiffernUndWoerterErmittler();
         string[] zeilen = new[]
@@ -29,9 +29,27 @@ public class ZahlErmittlerTests
 
     }
 
+    [Test]
+    public void ErmittleSummeZiffernUndWoerterErmittler_v2Test()
+    {
+        IZahlErmittler sut = new ZiffernUndWoerterErmittler_v2();
+        string[] zeilen = new[]
+        {
+            "two1nine",
+            "eightwothree",
+            "abcone2threexyz",
+            "xtwone3four",
+            "4nineeightseven2",
+            "zoneight234",
+            "7pqrstsixteen"
+        };
+
+        var summe = sut.ErmittleSumme(zeilen);
+        summe.Should().Be(281);
+    }
 
     [Test]
-    public void ErmittleSummeZiffernAndWoerterTest2()
+    public void ErmittleSummeZiffernAndWoerterTest()
     {
         IZahlErmittler sut = new ZiffernUndWoerterErmittler();
         string[] zeilen = new[]

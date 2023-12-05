@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeConundrum", "CubeConundrum.csproj", "{A8DF34B1-BFB5-4791-846A-A5350991F2DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeConundrum.Tests", "..\CubeConundrum.Tests\CubeConundrum.Tests.csproj", "{AD441A4D-7D23-4092-8FD8-F46B6C466131}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8DF34B1-BFB5-4791-846A-A5350991F2DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8DF34B1-BFB5-4791-846A-A5350991F2DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8DF34B1-BFB5-4791-846A-A5350991F2DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8DF34B1-BFB5-4791-846A-A5350991F2DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD441A4D-7D23-4092-8FD8-F46B6C466131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD441A4D-7D23-4092-8FD8-F46B6C466131}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD441A4D-7D23-4092-8FD8-F46B6C466131}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD441A4D-7D23-4092-8FD8-F46B6C466131}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {696B11E0-138A-4B52-BD61-F132F8898551}
+	EndGlobalSection
+EndGlobal

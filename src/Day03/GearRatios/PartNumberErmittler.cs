@@ -5,9 +5,73 @@ namespace GearRatios
 {
     public class PartNumberErmittler
     {
-        public int ErmittleSumme(string[] zeilen)
+        public int Ermittle_Summe_Gears(string[] zeilen)
         {
             var engineSchematic = Ermittle_Zeilen(zeilen);
+            List<Symbol> symbole = engineSchematic.Where(li => li is Symbol)
+                .Select(li => (Symbol)li)
+                .ToList();
+
+            var nummern = FilterPartnumbers(engineSchematic);
+
+            var gears = symbole.Where(li => li.Zeichen == '*').ToList();
+            
+            List<Gear> result = new();
+            foreach (var nummer in nummern)
+            {
+                var potenzielleGears = gears.Where(li =>
+                        li.Zeile == nummer.Zeile
+                        || li.Zeile == nummer.Zeile - 1
+                        || li.Zeile == nummer.Zeile + 1)
+                    .ToList();
+
+                List<Number> potenzielleNummern = nummern.Where(li =>
+                        li.Zeile == nummer.Zeile
+                        || li.Zeile == nummer.Zeile - 1
+                        || li.Zeile == nummer.Zeile + 1)
+                    .ToList();
+
+                List<Number> auswahl = new();
+                foreach (var potNummer in potenzielleNummern)
+                {
+                    if (potenzielleGears.Any(li => li.StartPosition == potNummer.StartPosition - 1
+                                                   || li.StartPosition == potNummer.EndPosition + 1
+                                                   || (li.StartPosition >= potNummer.StartPosition 
+                                                       && li.StartPosition <= potNummer.EndPosition)))
+                    {
+                        auswahl.Add(nummer);
+                    }
+                }
+
+                if (auswahl.Count == 2)
+                {
+                    result.Add(new Gear
+                    {
+                        PartNumber01 = new PartNumber(auswahl.First().Nummer),
+                        PartNumber02 = new PartNumber(auswahl.Last().Nummer)
+                    });
+                }
+                else if (auswahl.Count > 2)
+                {
+                    throw new Exception("Guard");
+                }
+            }
+
+            return result.Sum(li => li.CalculateRatio);
+        }
+
+        public int Ermittle_Summe_Partnumbers(string[] zeilen)
+        {
+            IEnumerable<EngineSchematic> engineSchematic = Ermittle_Zeilen(zeilen);
+
+            var numbers = FilterPartnumbers(engineSchematic);
+            List<PartNumber> partNumbers = numbers.Select(li => new PartNumber(li.Nummer)).ToList();
+
+            return partNumbers.Sum(li => li.Value);
+        }
+
+        private IEnumerable<Number> FilterPartnumbers(IEnumerable<EngineSchematic> engineSchematic)
+        {
             List<Symbol> symbole = engineSchematic.Where(li => li is Symbol)
                 .Select(li => (Symbol)li)
                 .ToList();
@@ -15,24 +79,24 @@ namespace GearRatios
                 .Select(li => (Number)li)
                 .ToList();
 
-            List<PartNumber> partNumbers = new();
-            foreach (var nummer in nummern)
+            List<Number> result = new();
+            foreach (Number nummer in nummern)
             {
-                var potenzielleSymbole = symbole.Where(li => 
+                var potenzielleSymbole = symbole.Where(li =>
                         li.Zeile == nummer.Zeile
-                    || li.Zeile == nummer.Zeile - 1
-                    || li.Zeile == nummer.Zeile + 1)
+                        || li.Zeile == nummer.Zeile - 1
+                        || li.Zeile == nummer.Zeile + 1)
                     .ToList();
 
-                if (potenzielleSymbole.Any(li => li.StartPosition == nummer.StartPosition -1
-                    || li.StartPosition == nummer.EndPosition + 1
-                    || (li.StartPosition >= nummer.StartPosition && li.StartPosition <= nummer.EndPosition)))
+                if (potenzielleSymbole.Any(li => li.StartPosition == nummer.StartPosition - 1
+                                                 || li.StartPosition == nummer.EndPosition + 1
+                                                 || (li.StartPosition >= nummer.StartPosition && li.StartPosition <= nummer.EndPosition)))
                 {
-                    partNumbers.Add(new PartNumber(nummer.Nummer));
+                    result.Add(nummer);
                 }
             }
 
-            return partNumbers.Sum(li => li.Value);
+            return result;
         }
 
         public IEnumerable<EngineSchematic> Ermittle_Zeilen(string[] zeilen)

@@ -1,46 +1,38 @@
 ﻿using System.Text.RegularExpressions;
-using OneOf;
+using GearRatios.Models;
 
 namespace GearRatios
 {
-    public sealed record Partnumber : EngineSchematic
-    {
-        public int Nummer { get; set; }
-
-        public int EndPosition => StartPosition + Nummer.ToString().Length;
-    }
-
-    public sealed record Symbol : EngineSchematic
-    {
-        public char Zeichen { get; set; }
-    }
-
-    public abstract record EngineSchematic
-    {
-        public int Zeile { get; set; }
-        public int StartPosition { get; set; }
-    }
-
     public class PartNumberErmittler
     {
-        //"467..114..",
-        //"...*......",
-        //"..35..633.",
-        //"......#...",
-        //"617*......",
-        //".....+.58.",
-        //"..592.....",
-        //"......755.",
-        //"...$.*....",
-        //".664.598.."
-
         public int ErmittleSumme(string[] zeilen)
         {
-            int summe = 0;
+            var engineSchematic = Ermittle_Zeilen(zeilen);
+            List<Symbol> symbole = engineSchematic.Where(li => li is Symbol)
+                .Select(li => (Symbol)li)
+                .ToList();
+            var nummern = engineSchematic.Where(li => li is Number)
+                .Select(li => (Number)li)
+                .ToList();
 
-            var temp = Ermittle_Zeilen(zeilen);
+            List<PartNumber> partNumbers = new();
+            foreach (var nummer in nummern)
+            {
+                var potenzielleSymbole = symbole.Where(li => 
+                        li.Zeile == nummer.Zeile
+                    || li.Zeile == nummer.Zeile - 1
+                    || li.Zeile == nummer.Zeile + 1)
+                    .ToList();
 
-            return summe;
+                if (potenzielleSymbole.Any(li => li.StartPosition == nummer.StartPosition -1
+                    || li.StartPosition == nummer.EndPosition + 1
+                    || (li.StartPosition >= nummer.StartPosition && li.StartPosition <= nummer.EndPosition)))
+                {
+                    partNumbers.Add(new PartNumber(nummer.Nummer));
+                }
+            }
+
+            return partNumbers.Sum(li => li.Value);
         }
 
         public IEnumerable<EngineSchematic> Ermittle_Zeilen(string[] zeilen)
@@ -67,6 +59,7 @@ namespace GearRatios
         {
             var result = new List<EngineSchematic>();
 
+            string tempZahl = string.Empty;
             var charArray = zeile.ToCharArray();
             for (var index = 0; index < charArray.Length; index++)
             {
@@ -87,6 +80,26 @@ namespace GearRatios
                     });
                     continue;
                 }
+
+                if (_zahl.IsMatch(zeichen.ToString()))
+                {
+                    tempZahl += zeichen;
+
+                    if ((index+1 >= charArray.Length) || !_zahl.IsMatch(charArray[index + 1].ToString()))
+                    {
+                        result.Add(new Number
+                        {
+                            Zeile = zeilennummer,
+                            StartPosition = index - tempZahl.Length + 1,
+                            Nummer = int.Parse(tempZahl)
+                        });
+                        tempZahl = string.Empty;
+                    }
+
+                    continue;
+                }
+
+                throw new Exception("Guard - Should not happen");
             }
 
             return result;

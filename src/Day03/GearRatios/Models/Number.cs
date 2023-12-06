@@ -1,6 +1,6 @@
 ﻿namespace GearRatios.Models;
 
-public sealed record Number : EngineSchematic
+public sealed record Number : EngineSchematicAbstract
 {
     public int Nummer { get; set; }
 
